@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "./";
+
+service Classifier {
+  rpc Classify (ClassifyRequest) returns (ClassifyResponse) {}
+}
+
+message ClassifyRequest {
+  string description = 1;
+}
+
+message ClassifyResponse {
+  string tag = 1;
+}
