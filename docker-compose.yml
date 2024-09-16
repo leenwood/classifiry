@@ -3,10 +3,10 @@ version: '3.8'
 services:
   classifier_service:
     build:
-      context: .
-      dockerfile: classifier_service/Dockerfile
+      context: ./classifier_service
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8080:8080"    # REST API port
     networks:
       - grpc-network
 
@@ -15,11 +15,9 @@ services:
       context: .
       dockerfile: python_app/Dockerfile
     ports:
-      - "50051:50051"
+      - "50051:50051"  # gRPC port
     networks:
       - grpc-network
-    depends_on:
-      - classifier_service
 
 networks:
   grpc-network:

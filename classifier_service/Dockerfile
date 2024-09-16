@@ -1,29 +1,31 @@
-# Use the official Golang image as a build environment
-FROM golang:1.22 AS builder
+# Используем официальный образ Go для сборки приложения
+FROM golang:1.22-alpine AS builder
 
-# Set the Current Working Directory inside the container
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Copy go.mod and go.sum files
-COPY classifier_service/go.mod classifier_service/go.sum ./
+# Устанавливаем необходимые пакеты
+RUN apk add --no-cache gcc musl-dev
 
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+# Копируем go.mod и go.sum файлы и загружаем зависимости
+COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the source code into the container
-COPY classifier_service/ .
+# Копируем исходный код приложения в контейнер
+COPY . .
 
-# Build the Go app
+# Сборка бинарного файла приложения
 RUN go build -o classifier_service main.go
 
-# Use a minimal Docker image for production
-FROM gcr.io/distroless/base-debian10
+# Используем минимальный alpine-образ для запуска приложения
+FROM alpine:latest
 
-# Copy the pre-built binary file from the previous stage
+# Устанавливаем необходимые библиотеки
+RUN apk add --no-cache libc6-compat
+
+# Копируем собранное приложение из предыдущего контейнера
 COPY --from=builder /app/classifier_service /classifier_service
 
-# Expose the gRPC port
-EXPOSE 50051
 
-# Run the Go application
-ENTRYPOINT ["/classifier_service"]
+# Запускаем приложение
+CMD ["/classifier_service"]
