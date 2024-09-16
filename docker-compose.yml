@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  classifier_service:
+    build:
+      context: .
+      dockerfile: classifier_service/Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - grpc-network
+
+  python_app:
+    build:
+      context: .
+      dockerfile: python_app/Dockerfile
+    ports:
+      - "50051:50051"
+    networks:
+      - grpc-network
+    depends_on:
+      - classifier_service
+
+networks:
+  grpc-network:
+    driver: bridge
