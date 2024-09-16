@@ -1,0 +1,4 @@
+grpcio==1.66.1
+protobuf==5.28.1
+torch==2.4.1
+transformers==4.44.2
